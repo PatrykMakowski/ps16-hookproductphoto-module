@@ -172,4 +172,77 @@ class hookProductPhoto extends Module
 		else
 			return null;
 	}
+	
+	public function getContent()
+	{
+		$output = null;
+		if(Tools::isSubmit('submit'.$this->name))
+		{
+			$image_size = Tools::getValue('image_size');
+			if(!$image_size || empty($image_size))
+				$output .= $this->displayError($this->l('Nieprawidłowa wartość w "image_size"'));
+			else 
+			{
+				$this->hpp_config['image_size'] = $image_size;
+				$output .= $this->displayConfirmation($this->l('Zapisano parametr "image_size"'));
+			}
+
+			Configuration::updateValue('HOOKPRODUCTPHOTO_CFG', base64_encode(serialize($this->hpp_config)));
+		}		
+		return $output . $this->displayForm();
+	}
+
+	public function displayForm()
+	{
+		$default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
+
+		$fields_form[0]['form'] = array(
+			'legend' => array(
+				'title' => $this->l('Konfiguracja'),
+			),
+			'input' => array(
+				array(
+					'type' => 'text',
+					'label' => $this->l('Rozmiar zdjęć w parametrach'),
+					'name' => 'image_size',
+					'size' => 20,
+					'required' => true
+				),
+			),
+			'submit' => array(
+				'title' => $this->l('Zapisz'),
+				'class' => 'btn btn-default pull-right'
+			)
+		);
+
+		$helper = new HelperForm();
+
+		$helper->module = $this;
+		$helper->name_controller = $this->name;
+		$helper->token = Tools::getAdminTokenLite('AdminModules');
+		$helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
+
+		$helper->default_form_language = $default_lang;
+		$helper->allow_employee_form_lang = $default_lang;
+
+		$helper->title = $this->displayName;
+		$helper->show_toolbar = true;
+		$helper->toolbar_scroll = true;
+		$helper->submit_action = 'submit'.$this->name;
+		$helper->toolbar_btn = array(
+			'save' =>
+			array(
+				'desc' => $this->l('Zapisz'),
+				'href' => AdminController::$currentIndex.'&configure='.$this->name.'&save'.$this->name.
+				'&token='.Tools::getAdminTokenLite('AdminModules'),
+			),
+			'back' => array(
+				'href' => AdminController::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminModules'),
+				'desc' => $this->l('Wróć')
+			)
+		);
+
+		$helper->fields_value['image_size'] = isset($this->hpp_config['image_size']) ? $this->hpp_config['image_size'] : self::DEFAULT_CONFIG['image_size'];
+		return $helper->generateForm($fields_form);
+	}
 }
