@@ -83,7 +83,7 @@ class hookProductPhoto extends Module
 		return true;
 	}
 
-	public function displayHookProductPhoto($params)
+	public function hookDisplayHookProductPhoto($params)
 	{
 		if(isset($params['id_product']) && is_numeric($params['id_product']))
 			$id_product = (int)$params['id_product'];
@@ -95,7 +95,7 @@ class hookProductPhoto extends Module
 		$cache_id = 'hookproductphoto|'. $id_product;
 		if (!$this->isCached('hook.tpl', $this->getCacheId($cache_id)))
 		{			
-			$img = getProductPhotoForProduct($id_product);
+			$img = $this->getProductPhotoForProduct($id_product);
 			$this->context->smarty->assign(array_merge($params, array(
 				'hpp_imageid' => $img,
 				'id_product' => $id_product,

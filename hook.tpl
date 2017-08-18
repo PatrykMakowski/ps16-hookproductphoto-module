@@ -8,6 +8,6 @@
 		$link (object)
 		$product (object)
 *}
-{if $hhp_imageid}
-	<img class="img-responsive" {$link->getImageLink($product->link_rewrite, $hhp_imageid, $hpp_config.image_size)|escape:'html':'UTF-8'}" alt="{$product->link_rewrite}">
+{if $hpp_imageid}
+	<img class="img-responsive" src="{$link->getImageLink($product->link_rewrite, $hpp_imageid, $hpp_config.image_size)|escape:'html':'UTF-8'}" alt="{$product->link_rewrite}">
 {/if}
