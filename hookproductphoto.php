@@ -133,6 +133,14 @@ class hookProductPhoto extends Module
 			Db::getInstance()->update('hookproductphoto', array('id_image' => pSQL($new_hpp)), "id_product='{$id_product}'");	
 		}
 	}
+	
+	public function hookActionProductDelete($params)
+	{
+		if(isset($params['id_product']) && is_numeric($params['id_product']))
+		{
+			Db::getInstance()->delete('hookproductphoto', "id_product = '{$params['id_product']}'");
+		}		
+	}
 
 	private function getProductPhotoForProduct($id_product)
 	{
