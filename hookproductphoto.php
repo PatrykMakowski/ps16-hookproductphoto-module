@@ -83,6 +83,28 @@ class hookProductPhoto extends Module
 		return true;
 	}
 
+	public function displayHookProductPhoto($params)
+	{
+		if(isset($params['id_product']) && is_numeric($params['id_product']))
+			$id_product = (int)$params['id_product'];
+		else if ($this->context->controller instanceof ProductController)
+			$id_product = (int)Tools::getValue('id_product');
+		else
+			return false;
+		
+		$cache_id = 'hookproductphoto|'. $id_product;
+		if (!$this->isCached('hook.tpl', $this->getCacheId($cache_id)))
+		{			
+			$img = getProductPhotoForProduct($id_product);
+			$this->context->smarty->assign(array_merge($params, array(
+				'hpp_imageid' => $img,
+				'id_product' => $id_product,
+				'hpp_config' => $this->hpp_config,
+			)));
+		}
+		return $this->display(__FILE__, 'hook.tpl', $this->getCacheId($cache_id));		
+	}
+
 	public function hookDisplayAdminProductsExtra($params)
 	{
 		if(Validate::isLoadedObject($product = new Product((int)Tools::getValue('id_product'))))
@@ -139,7 +161,7 @@ class hookProductPhoto extends Module
 		if(isset($params['id_product']) && is_numeric($params['id_product']))
 		{
 			Db::getInstance()->delete('hookproductphoto', "id_product = '{$params['id_product']}'");
-		}		
+		}
 	}
 
 	private function getProductPhotoForProduct($id_product)
